@@ -25,7 +25,7 @@
   const i18n = {
     en: {
       skip: "Skip to content",
-      nav_top: "About me",
+      nav_top: "To top",
       nav_stack: "Stack",
       nav_projects: "Projects",
       nav_lore: "Lore",
@@ -86,7 +86,7 @@
     },
     ua: {
       skip: "Перейти до контенту",
-      nav_top: "Про мене",
+      nav_top: "Вгору",
       nav_stack: "Стек",
       nav_projects: "Проєкти",
       nav_lore: "Лор",
