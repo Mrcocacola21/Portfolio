@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ff2d55" stop-opacity="0.95"/>
+      <stop offset="1" stop-color="#8b5cf6" stop-opacity="0.85"/>
+    </linearGradient>
+    <radialGradient id="r" cx="30%" cy="22%" r="70%">
+      <stop offset="0" stop-color="#fff" stop-opacity="0.18"/>
+      <stop offset="1" stop-color="#000" stop-opacity="0"/>
+    </radialGradient>
+    <pattern id="dots" width="24" height="24" patternUnits="userSpaceOnUse">
+      <circle cx="6" cy="6" r="1.2" fill="#fff" opacity="0.10"/>
+      <circle cx="18" cy="14" r="1.1" fill="#fff" opacity="0.07"/>
+    </pattern>
+  </defs>
+
+  <rect width="1200" height="630" fill="#05050e"/>
+  <rect width="1200" height="630" fill="url(#g)" opacity="0.35"/>
+  <rect width="1200" height="630" fill="url(#dots)" opacity="0.9"/>
+  <rect width="1200" height="630" fill="url(#r)"/>
+
+  <!-- “Silhouette” -->
+  <g transform="translate(0,40)" opacity="0.75">
+    <path d="M600 260
+             C480 260 420 340 420 450
+             C420 540 470 620 560 650
+             L560 760
+             C560 820 520 860 470 890
+             C410 930 360 1010 360 1100
+             L360 1320
+             L840 1320
+             L840 1100
+             C840 1010 790 930 730 890
+             C680 860 640 820 640 760
+             L640 650
+             C730 620 780 540 780 450
+             C780 340 720 260 600 260 Z"
+          fill="#000" opacity="0.55"/>
+    <path d="M430 510 C380 470 360 420 360 370
+             C360 260 460 170 600 170
+             C740 170 840 260 840 370
+             C840 420 820 470 770 510"
+          stroke="#fff" stroke-opacity="0.10" stroke-width="10" fill="none" />
+  </g>
+
+  <!-- Label -->
+  <g>
+    <rect x="72" y="1180" width="1056" height="300" rx="28" fill="#000" opacity="0.45"/>
+    <rect x="72" y="1180" width="1056" height="300" rx="28" fill="none" stroke="#fff" opacity="0.14" stroke-width="2"/>
+    <text x="120" y="1262" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="34" fill="#fff" opacity="0.9">
+      OG IMAGE PLACEHOLDER
+    </text>
+    <text x="120" y="1322" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="22" fill="#fff" opacity="0.65">
+      Drop your anime image here (replace this SVG)
+    </text>
+    <text x="120" y="1378" font-family="ui-monospace, SFMono-Regular, Menlo, Consolas, monospace" font-size="20" fill="#fff" opacity="0.50">
+      Recommended: 1200×1600 • .webp/.png • transparent or clean background
+    </text>
+  </g>
+
+  <!-- Speed lines -->
+  <g opacity="0.12">
+    <path d="M-60 900 L440 520" stroke="#fff" stroke-width="3"/>
+    <path d="M-60 980 L520 540" stroke="#fff" stroke-width="2"/>
+    <path d="M-60 1060 L600 560" stroke="#fff" stroke-width="2"/>
+    <path d="M1260 860 L760 500" stroke="#fff" stroke-width="3"/>
+    <path d="M1260 940 L700 520" stroke="#fff" stroke-width="2"/>
+    <path d="M1260 1020 L640 540" stroke="#fff" stroke-width="2"/>
+  </g>
+</svg>
