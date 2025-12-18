@@ -140,694 +140,328 @@
       contact_note: "",
       btn_email: "Надіслати лист",
       btn_top: "На початок",
-      waifu_contact_cap: "Фінальний слот персонажа. (Так, її теж міняй.)",
+      waifu_contact_cap: "",
       footer_made: "Зроблено для GitHub Pages • Без збірки • CDN бібліотеки",
       toast_copied: "Скопійовано ✨",
       toast_failed: "Не вдалось скопіювати"
     }
   };
 
-  function applyLang(lang) {
-    root.dataset.lang = lang;
-    const dict = i18n[lang] || i18n.en;
-    $$('[data-i18n]').forEach(el => {
-      const key = el.dataset.i18n;
-      const val = dict[key];
-      if (val == null) return;
-      if (/[<>]/.test(val)) el.innerHTML = val;
-      else el.textContent = val;
-    });
-    $('#langLabel').textContent = lang.toUpperCase();
-    try { localStorage.setItem('lang', lang); } catch {}
-  }
+/* ===================== LANG ===================== */
+function applyLang(lang) {
+  root.dataset.lang = lang;
+  const dict = i18n[lang] || i18n.en;
+  $$('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    const val = dict[key];
+    if (val == null) return;
+    if (/[<>]/.test(val)) el.innerHTML = val;
+    else el.textContent = val;
+  });
+  $('#langLabel').textContent = lang.toUpperCase();
+  try { localStorage.setItem('lang', lang); } catch {}
+}
 
-  const initialLang = (() => {
-    try {
-      const saved = localStorage.getItem('lang');
-      if (saved === 'ua' || saved === 'en') return saved;
-    } catch {}
-    const nav = (navigator.language || '').toLowerCase();
-    return nav.startsWith('uk') ? 'ua' : 'en';
-  })();
+const initialLang = (() => {
+  try {
+    const saved = localStorage.getItem('lang');
+    if (saved === 'ua' || saved === 'en') return saved;
+  } catch {}
+  return (navigator.language || '').toLowerCase().startsWith('uk') ? 'ua' : 'en';
+})();
 
-  applyLang(initialLang);
-  $('#langBtn')?.addEventListener('click', () => {
-    const next = root.dataset.lang === 'en' ? 'ua' : 'en';
-    applyLang(next);
-  }, { passive: true });
+applyLang(initialLang);
+$('#langBtn')?.addEventListener('click', () => {
+  applyLang(root.dataset.lang === 'en' ? 'ua' : 'en');
+}, { passive: true });
 
-  // ===== Lazy images (fast-scroll safe) =====
-  function lazyLoadImages() {
-    const imgs = $$('img[data-src]');
-    if (!imgs.length) return;
+/* ===================== LAZY IMAGES ===================== */
+function lazyLoadImages() {
+  const imgs = $$('img[data-src]');
+  if (!imgs.length) return;
 
-    const load = async (img) => {
-      const src = img.dataset.src;
-      if (!src) return;
-      img.removeAttribute('data-src');
-      img.src = src;
-      try { if (img.decode) await img.decode(); } catch {}
-      img.classList.add('is-loaded');
-    };
-
-    if (!('IntersectionObserver' in window)) {
-      imgs.forEach(img => load(img));
-      return;
-    }
-
-    const io = new IntersectionObserver((entries) => {
-      for (const e of entries) {
-        if (!e.isIntersecting) continue;
-        io.unobserve(e.target);
-        load(e.target);
-      }
-    }, { rootMargin: '1800px 0px', threshold: 0.01 });
-
-    imgs.forEach(img => io.observe(img));
-
-    // Idle preload: helps when user scrolls very fast on first load
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 220));
-    idle(() => {
-      imgs.slice(0, 6).forEach(img => img.dataset.src && load(img));
-    });
-  }
-  lazyLoadImages();
-
-  // ===== Progress bar (rAF-throttled) =====
-  const progressBar = $('#progressBar');
-  let scrollScheduled = false;
-
-  const updateProgress = () => {
-    scrollScheduled = false;
-    if (!progressBar) return;
-    const h = document.documentElement;
-    const max = Math.max(1, h.scrollHeight - h.clientHeight);
-    const p = (h.scrollTop / max) * 100;
-    progressBar.style.width = p.toFixed(2) + '%';
+  const load = async (img) => {
+    img.src = img.dataset.src;
+    img.removeAttribute('data-src');
+    try { await img.decode?.(); } catch {}
+    img.classList.add('is-loaded');
   };
 
-  document.addEventListener('scroll', () => {
-    if (scrollScheduled) return;
-    scrollScheduled = true;
-    requestAnimationFrame(updateProgress);
-  }, { passive: true });
-  updateProgress();
+  if (!('IntersectionObserver' in window)) {
+    imgs.forEach(load);
+    return;
+  }
 
-  // ===== Copy email =====
-  const toast = (() => {
-    const el = document.createElement('div');
-    el.className = 'toast';
-    el.setAttribute('role', 'status');
-    el.setAttribute('aria-live', 'polite');
-    document.body.appendChild(el);
-
-    let t = null;
-    return (msg) => {
-      el.textContent = msg;
-      el.classList.add('is-on');
-      clearTimeout(t);
-      t = setTimeout(() => el.classList.remove('is-on'), 1400);
-    };
-  })();
-
-  $('#copyEmail')?.addEventListener('click', async (e) => {
-    const btn = e.currentTarget;
-    const email = btn?.dataset?.copy;
-    if (!email) return;
-    const dict = i18n[root.dataset.lang] || i18n.en;
-    try {
-      await navigator.clipboard.writeText(email);
-      toast(dict.toast_copied);
-    } catch {
-      try {
-        const ta = document.createElement('textarea');
-        ta.value = email;
-        ta.style.position = 'fixed';
-        ta.style.left = '-9999px';
-        document.body.appendChild(ta);
-        ta.select();
-        document.execCommand('copy');
-        document.body.removeChild(ta);
-        toast(dict.toast_copied);
-      } catch {
-        toast(dict.toast_failed);
-      }
+  const io = new IntersectionObserver(entries => {
+    for (const e of entries) {
+      if (!e.isIntersecting) continue;
+      io.unobserve(e.target);
+      load(e.target);
     }
+  }, { rootMargin: '1800px 0px', threshold: 0.01 });
+
+  imgs.forEach(img => io.observe(img));
+}
+lazyLoadImages();
+
+/* ===================== ONE SCROLL SCHEDULER ===================== */
+let _scrollY = window.scrollY;
+let _scrolling = false;
+let _scrollTimer = 0;
+let _raf = false;
+const _scrollSubs = new Set();
+
+const onScrollFrame = () => {
+  _raf = false;
+  _scrollSubs.forEach(fn => fn(_scrollY));
+};
+
+const scheduleScroll = () => {
+  if (_raf) return;
+  _raf = true;
+  requestAnimationFrame(onScrollFrame);
+};
+
+const markScrolling = () => {
+  _scrolling = true;
+  clearTimeout(_scrollTimer);
+  _scrollTimer = setTimeout(() => _scrolling = false, 120);
+};
+
+window.addEventListener('scroll', () => {
+  _scrollY = window.scrollY;
+  markScrolling();
+  scheduleScroll();
+}, { passive: true });
+
+const isUserScrolling = () => _scrolling;
+
+/* ===================== PROGRESS BAR ===================== */
+const progressBar = $('#progressBar');
+if (progressBar) {
+  _scrollSubs.add(y => {
+    const h = document.documentElement;
+    const max = Math.max(1, h.scrollHeight - h.clientHeight);
+    progressBar.style.width = ((y / max) * 100).toFixed(2) + '%';
+  });
+}
+
+/* ===================== THEME BLEND ===================== */
+function initThemeBlend() {
+  const themed = $$('[data-theme]');
+  if (!themed.length) return;
+
+  const hex = h => {
+    h = (h || '#000').replace('#','');
+    if (h.length === 3) h = [...h].map(x=>x+x).join('');
+    const n = parseInt(h,16);
+    return [n>>16&255,n>>8&255,n&255];
+  };
+
+  let frames = [];
+  const recalc = () => {
+    frames = themed.map(s => ({
+      top: s.getBoundingClientRect().top + _scrollY,
+      bg0: hex(s.dataset.bg0),
+      bg1: hex(s.dataset.bg1),
+      ac1: hex(s.dataset.accent),
+      ac2: hex(s.dataset.accent2)
+    })).sort((a,b)=>a.top-b.top);
+  };
+  recalc();
+
+  let lastT = -1, lastTime = 0;
+
+  _scrollSubs.add(() => {
+    const now = performance.now();
+    if (now - lastTime < 33) return;
+
+    const probe = _scrollY + 86 + innerHeight * 0.28;
+    let i = 0;
+    while (i+1 < frames.length && frames[i+1].top <= probe) i++;
+
+    const a = frames[i];
+    const b = frames[i+1] || a;
+    const t = clamp((probe - a.top) / Math.max(1, b.top - a.top), 0, 1);
+    if (Math.abs(t - lastT) < 0.012) return;
+
+    lastT = t;
+    lastTime = now;
+
+    const mix = (x,y)=>`rgb(${x.map((v,i)=>Math.round(v+(y[i]-v)*t)).join(' ')})`;
+    root.style.setProperty('--bg0', mix(a.bg0,b.bg0));
+    root.style.setProperty('--bg1', mix(a.bg1,b.bg1));
+    root.style.setProperty('--accent', mix(a.ac1,b.ac1));
+    root.style.setProperty('--accent2', mix(a.ac2,b.ac2));
+    window.dispatchEvent(new Event('themechange'));
   });
 
-  // ===== Smooth theme blending (scroll-scrub, very smooth) =====
-  function initThemeBlend() {
-    const themed = $$('[data-theme]');
-    if (!themed.length) return;
+  window.addEventListener('resize', recalc, { passive:true });
+}
+initThemeBlend();
 
-    const getAbsTop = (el) => el.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop || 0);
+/* ===================== ✨ ANIMATIONS (PATCHED) ✨ ===================== */
+function initAnimations() {
+  if (reduceMotion || !window.gsap || !window.ScrollTrigger) return;
 
-    // Parse hex like #aabbcc
-    const hexToRgb = (hex) => {
-      if (!hex) return [0, 0, 0];
-      let h = String(hex).trim().replace('#', '');
-      if (h.length === 3) h = h.split('').map(c => c + c).join('');
-      const n = parseInt(h, 16);
-      if (!Number.isFinite(n)) return [0, 0, 0];
-      return [(n >> 16) & 255, (n >> 8) & 255, n & 255];
-    };
-    const mixRgb = (a, b, t) => [
-      Math.round(a[0] + (b[0] - a[0]) * t),
-      Math.round(a[1] + (b[1] - a[1]) * t),
-      Math.round(a[2] + (b[2] - a[2]) * t)
-    ];
-    const rgbStr = (c) => `rgb(${c[0]} ${c[1]} ${c[2]})`;
+  gsap.registerPlugin(ScrollTrigger);
 
-    // Keyframes
-    let frames = [];
-    const recalc = () => {
-      frames = themed.map((s) => ({
-        el: s,
-        top: getAbsTop(s),
-        bg0: s.dataset.bg0,
-        bg1: s.dataset.bg1,
-        accent: s.dataset.accent,
-        accent2: s.dataset.accent2,
-        // pre-parse for speed
-        _bg0: hexToRgb(s.dataset.bg0),
-        _bg1: hexToRgb(s.dataset.bg1),
-        _ac1: hexToRgb(s.dataset.accent),
-        _ac2: hexToRgb(s.dataset.accent2),
-      })).sort((a, b) => a.top - b.top);
-    };
-    recalc();
+  // ⛔ VERY IMPORTANT
+  ScrollTrigger.config({
+    ignoreMobileResize: true,
+    autoRefreshEvents: "visibilitychange,DOMContentLoaded,load"
+  });
 
-    const themeColor = document.querySelector('meta[name="theme-color"]');
+  /* ===================== INITIAL STATE (NO JITTER) ===================== */
+  gsap.set('.section', { autoAlpha: 0, y: 28 });
+  gsap.set('.card', { autoAlpha: 0, y: 20 });
 
-    let lastKey = '';
-    let lastEmit = 0;
-
-    const setVars = (bg0, bg1, accent, accent2) => {
-      // Avoid re-setting if identical (saves style recalcs)
-      const key = bg0 + '|' + bg1 + '|' + accent + '|' + accent2;
-      if (key === lastKey) return;
-      lastKey = key;
-
-      root.style.setProperty('--bg0', bg0);
-      root.style.setProperty('--bg1', bg1);
-      root.style.setProperty('--accent', accent);
-      root.style.setProperty('--accent2', accent2);
-
-      // Throttle themechange for petals gradient rebuild
-      const now = performance.now();
-      if (now - lastEmit > 140) {
-        lastEmit = now;
-        window.dispatchEvent(new CustomEvent('themechange'));
+  /* ===================== SECTIONS ===================== */
+  gsap.utils.toArray('.section').forEach(sec => {
+    gsap.to(sec, {
+      autoAlpha: 1,
+      y: 0,
+      duration: 0.9,
+      ease: 'power3.out',
+      immediateRender: false,
+      scrollTrigger: {
+        trigger: sec,
+        start: 'top 82%',
+        toggleActions: 'play none none reverse',
+        invalidateOnRefresh: true
       }
-
-      // Keep browser UI theme color close (no need each frame but cheap)
-      if (themeColor) themeColor.setAttribute('content', bg0);
-    };
-
-    const headerOffset = 86;
-    const probeFrac = 0.28; // point inside viewport for stable blending
-
-    let scheduled = false;
-
-    const update = () => {
-      scheduled = false;
-      if (!frames.length) return;
-
-      const doc = document.documentElement;
-      const y = (window.scrollY || doc.scrollTop || 0);
-      const vh = window.innerHeight || doc.clientHeight || 1;
-      const probe = y + headerOffset + (vh * probeFrac);
-
-      // Reduced motion: snap to the nearest active section (no blending)
-      if (reduceMotion) {
-        // bottom -> last
-        const maxY = Math.max(0, doc.scrollHeight - doc.clientHeight);
-        if (y >= maxY - 2) {
-          const last = frames[frames.length - 1];
-          setVars(last.bg0, last.bg1, last.accent, last.accent2);
-          return;
-        }
-        let i = 0;
-        while (i + 1 < frames.length && frames[i + 1].top <= probe) i++;
-        const cur = frames[i];
-        setVars(cur.bg0, cur.bg1, cur.accent, cur.accent2);
-        return;
-      }
-
-      // Clamp to ends
-      if (probe <= frames[0].top) {
-        const f = frames[0];
-        setVars(f.bg0, f.bg1, f.accent, f.accent2);
-        return;
-      }
-
-      const maxY = Math.max(0, doc.scrollHeight - doc.clientHeight);
-      if (y >= maxY - 2) {
-        const last = frames[frames.length - 1];
-        setVars(last.bg0, last.bg1, last.accent, last.accent2);
-        return;
-      }
-
-      // Find segment [i, i+1]
-      let i = 0;
-      while (i + 1 < frames.length && frames[i + 1].top <= probe) i++;
-
-      const a = frames[i];
-      const b = frames[Math.min(i + 1, frames.length - 1)];
-
-      const span = Math.max(1, b.top - a.top);
-      const t = clamp((probe - a.top) / span, 0, 1);
-
-      // Mix and set as rgb(...) for smooth continuous updates
-      const bg0 = rgbStr(mixRgb(a._bg0, b._bg0, t));
-      const bg1 = rgbStr(mixRgb(a._bg1, b._bg1, t));
-      const ac1 = rgbStr(mixRgb(a._ac1, b._ac1, t));
-      const ac2 = rgbStr(mixRgb(a._ac2, b._ac2, t));
-      setVars(bg0, bg1, ac1, ac2);
-    };
-
-    const schedule = () => {
-      if (scheduled) return;
-      scheduled = true;
-      requestAnimationFrame(update);
-    };
-
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', () => { recalc(); schedule(); }, { passive: true });
-
-    // Recalc after layout settles (images/fonts)
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 260));
-    idle(() => { recalc(); schedule(); });
-
-    // Initial apply
-    schedule();
-  }
-  initThemeBlend();
-
-  // ===== Smooth scroll (Lenis) + ScrollTrigger (NO double-raf) =====
-  let lenis = null;
-  const canLenis = highFX && window.Lenis && !reduceMotion;
-
-  if (canLenis) {
-    lenis = new Lenis({
-      lerp: 0.09,
-      wheelMultiplier: 0.95,
-      smoothWheel: true,
-      smoothTouch: false
     });
+  });
 
-    // Anchor click -> lenis scrollTo
-    document.addEventListener('click', (e) => {
-      const a = e.target.closest('a[href^="#"]');
-      if (!a) return;
-      const id = a.getAttribute('href');
-      if (!id || id === '#') return;
-      if (id === '#top') {
-        e.preventDefault();
-        lenis.scrollTo(0, { duration: 1.0, easing: (t) => 1 - Math.pow(1 - t, 4) });
-        return;
-      }
-      const target = document.querySelector(id);
-      if (!target) return;
-      e.preventDefault();
-      lenis.scrollTo(target, { offset: -70, duration: 1.05, easing: (t) => 1 - Math.pow(1 - t, 4) });
-    });
-
-    if (window.gsap && window.ScrollTrigger) {
-      gsap.registerPlugin(ScrollTrigger);
-      // Drive Lenis from GSAP ticker (single loop)
-      gsap.ticker.add((t) => lenis.raf(t * 1000));
-      gsap.ticker.lagSmoothing(0);
-      lenis.on('scroll', ScrollTrigger.update);
-    } else {
-      // fallback single RAF loop (still one loop)
-      const raf = (time) => { lenis.raf(time); requestAnimationFrame(raf); };
-      requestAnimationFrame(raf);
-    }
-  } else {
-    // Native smooth scroll for anchors (only if not reduced-motion)
-    if (!reduceMotion) {
-      document.addEventListener('click', (e) => {
-        const a = e.target.closest('a[href^="#"]');
-        if (!a) return;
-        const id = a.getAttribute('href');
-        if (!id || id === '#') return;
-        if (id === '#top') {
-          e.preventDefault();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-          return;
-        }
-        const target = document.querySelector(id);
-        if (!target) return;
-        e.preventDefault();
-        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      });
-    }
-  }
-
-  // ===== Animations (batched) =====
-  function initAnimations() {
-    if (reduceMotion || !window.gsap) return;
-
-    // Split headings/subtitles (small amount only)
-    try {
-      const splitEls = $$('.split');
-      splitEls.forEach((el) => new SplitType(el, { types: 'words,chars' }));
-    } catch {}
-
-    if (window.ScrollTrigger) gsap.registerPlugin(ScrollTrigger);
-
-    // Sections: one trigger per section (fine)
-    gsap.utils.toArray('.section').forEach((sec) => {
-      gsap.from(sec, {
-        opacity: 0,
-        y: 18,
-        duration: 0.8,
+  /* ===================== CARDS (STAGGER) ===================== */
+  ScrollTrigger.batch('.card', {
+    start: 'top 88%',
+    onEnter: batch =>
+      gsap.to(batch, {
+        autoAlpha: 1,
+        y: 0,
+        duration: 0.6,
         ease: 'power3.out',
+        stagger: 0.08,
+        overwrite: true,
+        immediateRender: false
+      }),
+    onLeaveBack: batch =>
+      gsap.to(batch, {
+        autoAlpha: 0,
+        y: 20,
+        duration: 0.35,
+        ease: 'power2.out',
+        overwrite: true
+      })
+  });
+
+  /* ===================== WAIFU PARALLAX ===================== */
+  if (highFX) {
+    gsap.utils.toArray('.waifu__frame').forEach(frame => {
+      gsap.to(frame, {
+        y: -14,
+        ease: 'none',
         scrollTrigger: {
-          trigger: sec,
-          start: 'top 80%',
-          toggleActions: 'play none none reverse'
+          trigger: frame,
+          start: 'top bottom',
+          end: 'bottom top',
+          scrub: 0.6,
+          invalidateOnRefresh: true
         }
       });
     });
-
-    // Cards: batch triggers for better perf (many cards)
-    if (window.ScrollTrigger && ScrollTrigger.batch) {
-      ScrollTrigger.batch('.card', {
-        start: 'top 85%',
-        once: false,
-        onEnter: (batch) => gsap.fromTo(batch, { opacity: 0, y: 14 }, {
-          opacity: 1, y: 0, duration: 0.6, ease: 'power3.out', stagger: 0.06, overwrite: true
-        }),
-        onLeaveBack: (batch) => gsap.to(batch, { opacity: 0, y: 14, duration: 0.35, ease: 'power2.out', stagger: 0.03, overwrite: true })
-      });
-    } else {
-      gsap.utils.toArray('.card').forEach((card) => {
-        gsap.from(card, {
-          opacity: 0,
-          y: 14,
-          duration: 0.6,
-          ease: 'power3.out',
-          scrollTrigger: { trigger: card, start: 'top 85%', toggleActions: 'play none none reverse' }
-        });
-      });
-    }
-
-    // Waifu parallax: only in highFX
-    if (highFX && window.ScrollTrigger) {
-      gsap.utils.toArray('.waifu__frame').forEach((frame) => {
-        gsap.to(frame, {
-          y: -12,
-          ease: 'none',
-          scrollTrigger: {
-            trigger: frame,
-            start: 'top bottom',
-            end: 'bottom top',
-            scrub: 0.55
-          }
-        });
-      });
-    }
-
-    // Shine on primary buttons: only in highFX
-    if (highFX) {
-      gsap.utils.toArray('.btn .btn__shine').forEach((s) => {
-        gsap.to(s, { xPercent: 55, duration: 2.6, ease: 'power2.inOut', repeat: -1, yoyo: true });
-      });
-    }
   }
-  initAnimations();
 
-  // ===== Active nav link (deterministic + last-section safe) =====
-  function initActiveNav() {
-    const links = $$('.nav__a');
-    if (!links.length) return;
-
-    const sections = links
-      .map(l => l.getAttribute('href'))
-      .filter(h => h && h.startsWith('#') && h !== '#')
-      .filter(h => h !== '#top')
-      .map(h => ({ href: h, el: document.querySelector(h) }))
-      .filter(x => x.el);
-
-    const getAbsTop = (el) => el.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop || 0);
-
-    let ordered = [];
-    const recalc = () => {
-      ordered = sections
-        .map(s => ({ ...s, top: getAbsTop(s.el) }))
-        .sort((a, b) => a.top - b.top);
-    };
-    recalc();
-
-    const setActive = (href) => {
-      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === href));
-    };
-
-    // Marker line (below fixed header). Using a probe point fixes "last section never reaches top" cases.
-    const headerOffset = 86;
-    const probeFrac = 0.28; // probe point inside viewport
-
-    let scheduled = false;
-
-    const update = () => {
-      scheduled = false;
-      if (!ordered.length) { setActive('#top'); return; }
-
-      const doc = document.documentElement;
-      const y = (window.scrollY || doc.scrollTop || 0);
-      const vh = window.innerHeight || doc.clientHeight || 1;
-      const probe = y + headerOffset + (vh * probeFrac);
-
-      // Top state
-      if (probe < ordered[0].top - 20) { setActive('#top'); return; }
-
-      // Bottom state -> force last
-      const maxY = Math.max(0, doc.scrollHeight - doc.clientHeight);
-      if (y >= maxY - 2) { setActive(ordered[ordered.length - 1].href); return; }
-
-      // Binary search: last section whose top <= probe
-      let lo = 0, hi = ordered.length - 1, ans = 0;
-      while (lo <= hi) {
-        const mid = (lo + hi) >> 1;
-        if (ordered[mid].top <= probe) { ans = mid; lo = mid + 1; }
-        else { hi = mid - 1; }
-      }
-      setActive(ordered[ans].href);
-    };
-
-    const schedule = () => {
-      if (scheduled) return;
-      scheduled = true;
-      requestAnimationFrame(update);
-    };
-
-    window.addEventListener('scroll', schedule, { passive: true });
-    window.addEventListener('resize', () => { recalc(); schedule(); }, { passive: true });
-
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 300));
-    idle(() => { recalc(); schedule(); });
-
-    try { lenis?.on?.('scroll', schedule); } catch {}
-
-    schedule();
+  /* ===================== BUTTON SHINE ===================== */
+  if (highFX) {
+    gsap.utils.toArray('.btn .btn__shine').forEach(el => {
+      gsap.to(el, {
+        xPercent: 60,
+        duration: 2.8,
+        ease: 'power2.inOut',
+        repeat: -1,
+        yoyo: true
+      });
+    });
   }
-  initActiveNav();
 
-  // ===== Sakura / petals canvas (cached gradient + adaptive DPR) =====
-  function initPetals() {
-    const canvas = $('#petals');
-    if (!canvas) return;
+  /* ===================== FINAL, SINGLE REFRESH ===================== */
+  const idle = window.requestIdleCallback || (fn => setTimeout(fn, 400));
+  idle(() => {
+    ScrollTrigger.refresh(true);
+  });
+}
+initAnimations();
 
-    const ctx = canvas.getContext('2d', { alpha: true, desynchronized: true });
-    if (!ctx) return;
+/* ===================== ACTIVE NAV ===================== */
+function initActiveNav() {
+  const links = $$('.nav__a');
+  const sections = links.map(l => ({
+    link: l,
+    el: document.querySelector(l.hash)
+  })).filter(x => x.el);
 
-    let W = 0, H = 0, dpr = 1;
-    let grad = null;
-    let a1 = '#ff4bd8', a2 = '#4bf2ff';
+  let ordered = [];
+  const recalc = () => {
+    ordered = sections.map(s => ({
+      ...s,
+      top: s.el.getBoundingClientRect().top + _scrollY
+    })).sort((a,b)=>a.top-b.top);
+  };
+  recalc();
 
-    const computeDpr = () => {
-      const raw = window.devicePixelRatio || 1;
-      const px = (window.innerWidth * window.innerHeight);
-      // cap DPR on huge screens for perf
-      if (px > 2_000_000) return clamp(raw, 1, 1.5);
-      return clamp(raw, 1, 2);
-    };
+  _scrollSubs.add(() => {
+    const probe = _scrollY + 86 + innerHeight * 0.28;
+    let cur = '#top';
+    for (const s of ordered) if (s.top <= probe) cur = s.link.hash;
+    links.forEach(l => l.classList.toggle('is-active', l.hash === cur));
+  });
 
-    const refreshThemeColors = () => {
-      const cs = getComputedStyle(root);
-      a1 = (cs.getPropertyValue('--accent') || '#ff4bd8').trim();
-      a2 = (cs.getPropertyValue('--accent2') || '#4bf2ff').trim();
-      grad = ctx.createLinearGradient(0, 0, W, H);
-      grad.addColorStop(0, a1);
-      grad.addColorStop(1, a2);
-    };
+  window.addEventListener('resize', recalc, { passive:true });
+}
+initActiveNav();
 
-    const setSize = () => {
-      dpr = computeDpr();
-      W = Math.floor(window.innerWidth);
-      H = Math.floor(window.innerHeight);
-      canvas.width = Math.floor(W * dpr);
-      canvas.height = Math.floor(H * dpr);
-      canvas.style.width = W + 'px';
-      canvas.style.height = H + 'px';
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-      refreshThemeColors();
-    };
-    setSize();
+/* ===================== PETALS ===================== */
+function initPetals() {
+  const c = $('#petals');
+  if (!c) return;
+  const ctx = c.getContext('2d');
+  let W,H;
+  const resize = () => {
+    W = c.width = innerWidth;
+    H = c.height = innerHeight;
+  };
+  resize();
+  addEventListener('resize', resize, { passive:true });
 
-    const maxPetals = highFX ? 22 : 12;
-    const petals = Array.from({ length: maxPetals }, () => ({
-      x: Math.random() * W,
-      y: Math.random() * H,
-      r: 6 + Math.random() * 10,
-      vx: -0.25 - Math.random() * 0.55,
-      vy: 0.35 + Math.random() * 0.8,
-      rot: Math.random() * Math.PI * 2,
-      vr: -0.015 + Math.random() * 0.03,
-      wob: Math.random() * 2.4,
-      ph: Math.random() * Math.PI * 2
-    }));
+  const petals = Array.from({ length: highFX ? 22 : 12 }, () => ({
+    x: Math.random()*W,
+    y: Math.random()*H,
+    vx: -0.4-Math.random(),
+    vy: 0.4+Math.random(),
+    r: 6+Math.random()*8
+  }));
 
-    let running = !reduceMotion;
-    document.addEventListener('visibilitychange', () => {
-      running = !document.hidden && !reduceMotion;
-    }, { passive: true });
-
-    window.addEventListener('themechange', () => {
-      // rebuild gradient only, cheap
-      refreshThemeColors();
-    }, { passive: true });
-
-    const drawPetal = (p, t) => {
-      const wob = Math.sin(t * 0.0012 + p.ph) * p.wob;
-      const x = p.x + wob;
-      const y = p.y;
-
-      ctx.save();
-      ctx.translate(x, y);
-      ctx.rotate(p.rot);
-      ctx.scale(1, 0.75);
-
-      ctx.beginPath();
-      ctx.moveTo(0, -p.r);
-      ctx.quadraticCurveTo(p.r * 0.9, -p.r * 0.2, 0, p.r);
-      ctx.quadraticCurveTo(-p.r * 0.9, -p.r * 0.2, 0, -p.r);
-      ctx.closePath();
-
-      ctx.fill();
-      ctx.restore();
-    };
-
-    let lastT = 0;
-    const step = (t) => {
-      if (!running) return requestAnimationFrame(step);
-
-      const dt = Math.min(32, t - lastT || 16);
-      lastT = t;
-
-      ctx.clearRect(0, 0, W, H);
-      ctx.globalAlpha = highFX ? 0.22 : 0.16;
-      ctx.fillStyle = grad;
-
-      for (const p of petals) {
-        p.x += p.vx * (dt * 0.06);
-        p.y += p.vy * (dt * 0.06);
-        p.rot += p.vr * (dt * 0.9);
-
-        if (p.y > H + 40) { p.y = -40; p.x = Math.random() * W; }
-        if (p.x < -60) p.x = W + 60;
-
-        drawPetal(p, t);
-      }
-
+  const step = () => {
+    if (isUserScrolling()) {
       requestAnimationFrame(step);
-    };
-
-    if (!reduceMotion) requestAnimationFrame(step);
-
-    window.addEventListener('resize', () => {
-      setSize();
-    }, { passive: true });
-  }
-  initPetals();
-
-  // ===== Year =====
-  const yearEl = $('#year');
-  if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
-  // ===== Minimal toast styling =====
-  const style = document.createElement('style');
-  style.textContent = `
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(14px);
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.55);
-      color: rgba(244,243,255,.92);
-      font-size: 13px;
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 220ms ease, transform 220ms ease;
-      z-index: 9999;
+      return;
     }
-    .toast.is-on{ opacity: 1; transform: translateX(-50%) translateY(0px); }
-    @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
-  `;
-  document.head.appendChild(style);
+    ctx.clearRect(0,0,W,H);
+    ctx.globalAlpha = 0.2;
+    petals.forEach(p=>{
+      p.x+=p.vx; p.y+=p.vy;
+      if (p.y>H) p.y=-20;
+      if (p.x<0) p.x=W;
+      ctx.beginPath();
+      ctx.ellipse(p.x,p.y,p.r,p.r*0.6,0,0,Math.PI*2);
+      ctx.fill();
+    });
+    requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+initPetals();
 
-  // ===== Auto performance monitor -> LowFX mode =====
-  // If we detect sustained low FPS, we drop the most expensive effects.
-  let lowFX = false;
-  let frames = 0;
-  let acc = 0;
-  let last = performance.now();
-  const warmupUntil = last + 2200;
-
-  function enableLowFX() {
-    if (lowFX) return;
-    lowFX = true;
-    highFX = false;
-    root.classList.add('lowfx');
-
-    // If Lenis exists, destroy it to remove scroll overhead
-    try { lenis?.destroy(); } catch {}
-    lenis = null;
-
-    // Also stop heavy continuous GSAP timelines (button shine) but keep scroll triggers
-    if (window.gsap) {
-      gsap.globalTimeline.getChildren(true, true, false).forEach(tl => {
-        // kill only infinite ones to reduce CPU
-        try {
-          if (tl.repeat && tl.repeat() === -1) tl.kill();
-        } catch {}
-      });
-    }
-  }
-
-  function fpsLoop(now) {
-    const dt = now - last;
-    last = now;
-    if (dt > 0 && dt < 200) {
-      frames++;
-      acc += dt;
-    }
-
-    // check every ~30 frames after warmup
-    if (now > warmupUntil && frames >= 30) {
-      const fps = 1000 / (acc / frames);
-      frames = 0; acc = 0;
-      if (fps < 48) enableLowFX();
-    }
-
-    requestAnimationFrame(fpsLoop);
-  }
-
-  if (!reduceMotion) requestAnimationFrame(fpsLoop);
 })();
