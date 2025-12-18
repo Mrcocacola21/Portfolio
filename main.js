@@ -192,6 +192,12 @@
       else el.textContent = val;
     });
     $('#langLabel').textContent = lang.toUpperCase();
+
+    // ✅ #muted = следующий язык (то есть “переключиться на…”)
+    const nextLang = (lang === 'en') ? 'ua' : 'en';
+    const mutedEl = $('#nextlang');
+    if (mutedEl) mutedEl.textContent = nextLang.toUpperCase();
+
     try { localStorage.setItem('lang', lang); } catch {}
   }
 
