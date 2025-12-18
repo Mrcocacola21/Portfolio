@@ -102,7 +102,7 @@
       pill_2: "Clean architecture",
       pill_3: "Data workflows",
       pill_4: "UI/UX taste",
-      waifu_lore_cap: "s",
+      waifu_lore_cap: "",
       contact_chip: "Summon Me",
       contact_sub: "Fastest way: Telegram.",
       contact_title: "Contact",
@@ -174,7 +174,7 @@
       contact_note: "",
       btn_email: "Надіслати лист",
       btn_top: "На початок",
-      waifu_contact_cap: "Фінальний слот персонажа. (Так, її теж міняй.)",
+      waifu_contact_cap: "",
       footer_made: "Зроблено для GitHub Pages • Без збірки • CDN бібліотеки",
       toast_copied: "Скопійовано ✨",
       toast_failed: "Не вдалось скопіювати"
