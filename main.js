@@ -98,7 +98,7 @@
       proj3_title: "Web Cardfight Vanguard",
       proj3_tag: "Monorepo",
       proj3_desc: "Early-stage Cardfight!! Vanguard web client and companion platform with a Next.js app shell, shared packages, and Supabase-ready foundation.",
-      proj3_repo: "github.com/Mrcocacola21/Web_Cardfight_Vanguard",
+      proj3_repo: "github.com/Mrcocacola21/…",
       proj4_title: "NYC Taxi DWH Pipeline",
       proj4_tag: "Data Eng",
       proj4_desc: "Reproducible ELT/DWH pipeline for NYC Taxi data: Postgres + dbt + Great Expectations, quarantine layer, benchmarks + EXPLAIN.",
