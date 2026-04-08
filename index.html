@@ -29,7 +29,7 @@
 </head>
 
 <body>
-  <a class="skip" href="#top" data-i18n="skip">Skip to content</a>
+  <a class="skip" href="#main-content" data-i18n="skip">Skip to content</a>
 
   <!-- Animated background layers -->
   <div class="fx">
@@ -57,13 +57,13 @@
       <div class="topbar__actions">
         <button class="chip chip--ghost" id="langBtn" type="button" aria-label="Toggle language">
           <span class="chip__dot" aria-hidden="true"></span>
-          <span id="langLabel">EN</span>/<span class="muted" id = "nextlang">UA</span>
+          <span id="langLabel">EN</span>/<span class="muted" id="nextlang">UA</span>
         </button>
         <button class="chip chip--ghost" id="fxBtn" type="button" aria-label="Toggle High FX">
           <span class="chip__dot" aria-hidden="true"></span>
           <span id="fxLabel">FX</span>
         </button>        
-        <a class="chip" href="https://github.com/Mrcocacola21" target="_blank" rel="noreferrer">
+        <a class="chip" href="https://github.com/Mrcocacola21" target="_blank" rel="noopener noreferrer">
           <i class="devicon-github-original" aria-hidden="true"></i><span>GitHub</span>
         </a>
       </div>
@@ -74,24 +74,23 @@
     </div>
   </header>
 
-  <main class="main" role="main">
+  <main class="main" id="main-content" tabindex="-1">
     <!-- HERO -->
     <section class="section hero" data-theme
       data-bg0="#07070b" data-bg1="#0c0c14"
       data-accent="#b84bff" data-accent2="#4bf2ff"
-      data-chip="VIOLET"
-      aria-label="Hero">
+      aria-labelledby="hero-title">
       <div class="container grid hero__grid">
         <div class="hero__copy">
           <p class="kicker" data-i18n="hero_kicker">UA • Kyiv time • Desktop-first</p>
-          <h1 class="h1 split" data-i18n="hero_title">Mrcocacola21</h1>
+          <h1 class="h1 split" id="hero-title" data-i18n="hero_title">Mrcocacola21</h1>
           <p class="sub split" data-i18n="hero_sub">
             Student • Data Software Engineering<br />
             Building systems that feel like magic.
           </p>
 
           <div class="hero__cta">
-            <a class="btn" href="https://github.com/Mrcocacola21" target="_blank" rel="noreferrer" data-i18n="btn_github">
+            <a class="btn" href="https://github.com/Mrcocacola21" target="_blank" rel="noopener noreferrer" data-i18n="btn_github">
               Open GitHub
               <span class="btn__shine" aria-hidden="true"></span>
             </a>
@@ -100,27 +99,27 @@
             </a>
           </div>
 
-          <div class="hero__meta">
+          <dl class="hero__meta">
             <div class="stat">
-              <div class="stat__k" data-i18n="stat_role_k">Role</div>
-              <div class="stat__v">Student</div>
+              <dt class="stat__k" data-i18n="stat_role_k">Role</dt>
+              <dd class="stat__v">Student</dd>
             </div>
             <div class="stat">
-              <div class="stat__k" data-i18n="stat_focus_k">Focus</div>
-              <div class="stat__v" data-i18n="stat_focus_v">Data • Software • Automation</div>
+              <dt class="stat__k" data-i18n="stat_focus_k">Focus</dt>
+              <dd class="stat__v" data-i18n="stat_focus_v">Data • Software • Automation</dd>
             </div>
             <div class="stat">
-              <div class="stat__k" data-i18n="stat_timezone_k">Timezone</div>
-              <div class="stat__v">UA (Europe/Kyiv)</div>
+              <dt class="stat__k" data-i18n="stat_timezone_k">Timezone</dt>
+              <dd class="stat__v">UA (Europe/Kyiv)</dd>
             </div>
-          </div>
+          </dl>
 
           <div class="hero__hint" data-i18n="hint_scroll">
             Scroll ↓ for sections / anchors
           </div>
         </div>
 
-        <figure class="waifu waifu--hero" aria-label="Anime art placeholder">
+        <figure class="waifu waifu--hero" aria-hidden="true">
           <div class="waifu__frame">
             <img class="lazy" data-src="./assets/waifu-hero.webp" alt="" width="680" height="760" />
           </div>
@@ -134,8 +133,7 @@
     <section class="section" id="stack" data-theme
       data-bg0="#06060a" data-bg1="#120914"
       data-accent="#ff4bd8" data-accent2="#a44bff"
-      data-chip="PINK"
-      aria-label="Stack">
+      aria-labelledby="stack-title">
       <div class="container">
         <div class="section__head">
           <div class="chipline">
@@ -143,7 +141,7 @@
             <span class="chipline__dot"></span>
             <span class="chipline__txt" data-i18n="stack_sub">What I build with (and what I'm learning next).</span>
           </div>
-          <h2 class="h2 split" data-i18n="stack_title">Tools & Tech</h2>
+          <h2 class="h2 split" id="stack-title" data-i18n="stack_title">Tools & Tech</h2>
         </div>
 
         <div class="grid stack__grid">
@@ -166,9 +164,9 @@
 
           </div>
 
-          <figure class="waifu waifu--side" aria-label="Anime art placeholder for stack section">
+          <figure class="waifu waifu--side" aria-hidden="true">
             <div class="waifu__frame">
-              <img class="lazy" data-src="./assets/waifu-stack.webp" alt="Anime girl placeholder artwork (replace with your own)" width="520" height="600" />
+              <img class="lazy" data-src="./assets/waifu-stack.webp" alt="" width="520" height="600" />
             </div>
             <figcaption class="waifu__cap" data-i18n="waifu_stack_cap">
               Section art slot — replace with any PNG/WebP.
@@ -182,8 +180,7 @@
     <section class="section" id="projects" data-theme
       data-bg0="#06060a" data-bg1="#120709"
       data-accent="#ff3b3b" data-accent2="#ff9f1a"
-      data-chip="RED"
-      aria-label="Projects">
+      aria-labelledby="projects-title">
       <div class="projects__decor" aria-hidden="true">
         <img class="lazy projects__side projects__side--left" data-src="./assets/waifu-projects-left.png" alt="" width="360" height="720" />
         <img class="lazy projects__side projects__side--right" data-src="./assets/waifu-projects-right.png" alt="" width="360" height="720" />
@@ -195,68 +192,68 @@
             <span class="chipline__dot"></span>
             <span class="chipline__txt" data-i18n="proj_sub">Selected repos — click to open.</span>
           </div>
-          <h2 class="h2 split" data-i18n="proj_title">Projects</h2>
+          <h2 class="h2 split" id="projects-title" data-i18n="proj_title">Projects</h2>
         </div>
 
         <div class="grid projects__grid">
-          <a class="card card--link" href="https://github.com/Mrcocacola21/Kursova_DO_CyberPunk" target="_blank" rel="noreferrer">
+          <a class="card card--link" href="https://github.com/Mrcocacola21/Kursova_DO_CyberPunk" target="_blank" rel="noopener noreferrer">
             <div class="card__top">
-              <h3 class="h3">OptimizationAPP with GUI</h3>
-              <span class="tag">Python</span>
+              <h3 class="h3" data-i18n="proj1_title">OptimizationAPP with GUI</h3>
+              <span class="tag" data-i18n="proj1_tag">Python</span>
             </div>
             <p class="p" data-i18n="proj1_desc">Optimization engine + UI: iterations, plots, and cyber vibes.</p>
             <div class="card__btm">
-              <span class="mono">github.com/Mrcocacola21/…</span>
+              <span class="mono" data-i18n="proj1_repo">github.com/Mrcocacola21/…</span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
           </a>
 
-          <a class="card card--link" href="https://github.com/Mrcocacola21/FATE" target="_blank" rel="noreferrer">
+          <a class="card card--link" href="https://github.com/Mrcocacola21/FATE" target="_blank" rel="noopener noreferrer">
             <div class="card__top">
-              <h3 class="h3">FATE</h3>
-              <span class="tag">TypeScript</span>
+              <h3 class="h3" data-i18n="proj2_title">FATE</h3>
+              <span class="tag" data-i18n="proj2_tag">TypeScript</span>
             </div>
             <p class="p" data-i18n="proj2_desc">TypeScript monorepo: deterministic rules engine + authoritative Fastify/WebSocket server + Vite + React client.</p>
             <div class="card__btm">
-              <span class="mono">github.com/Mrcocacola21/…</span>
+              <span class="mono" data-i18n="proj2_repo">github.com/Mrcocacola21/…</span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
           </a>
 
 
-          <a class="card card--link" href="https://github.com/Mrcocacola21/Kursova_BD_Tour" target="_blank" rel="noreferrer">
+          <a class="card card--link" href="https://github.com/Mrcocacola21/Web_Cardfight_Vanguard" target="_blank" rel="noopener noreferrer">
             <div class="card__top">
-              <h3 class="h3">PHP + MySQL</h3>
-              <span class="tag">Web</span>
+              <h3 class="h3" data-i18n="proj3_title">Web Cardfight Vanguard</h3>
+              <span class="tag" data-i18n="proj3_tag">Monorepo</span>
             </div>
-            <p class="p" data-i18n="proj3_desc">Course project: classic PHP backend + relational database.</p>
+            <p class="p" data-i18n="proj3_desc">Early-stage Cardfight!! Vanguard web client and companion platform with a Next.js app shell, shared packages, and Supabase-ready foundation.</p>
             <div class="card__btm">
-              <span class="mono">github.com/Mrcocacola21/…</span>
+              <span class="mono" data-i18n="proj3_repo">github.com/Mrcocacola21/Web_Cardfight_Vanguard</span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
           </a>
 
-          <a class="card card--link" href="https://github.com/Mrcocacola21/nyc-taxi-dwh-pipeline" target="_blank" rel="noreferrer">
+          <a class="card card--link" href="https://github.com/Mrcocacola21/nyc-taxi-dwh-pipeline" target="_blank" rel="noopener noreferrer">
             <div class="card__top">
-              <h3 class="h3">NYC Taxi DWH Pipeline</h3>
-              <span class="tag">Data Eng</span>
+              <h3 class="h3" data-i18n="proj4_title">NYC Taxi DWH Pipeline</h3>
+              <span class="tag" data-i18n="proj4_tag">Data Eng</span>
             </div>
             <p class="p" data-i18n="proj4_desc">Reproducible ELT/DWH pipeline for NYC Taxi data: Postgres + dbt + Great Expectations, quarantine layer, benchmarks + EXPLAIN.</p>
             <div class="card__btm">
-              <span class="mono">github.com/Mrcocacola21/…</span>
+              <span class="mono" data-i18n="proj4_repo">github.com/Mrcocacola21/…</span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
           </a>
 
 
-          <a class="card card--link" href="https://github.com/Mrcocacola21/ABSOLUTE_CINEMA" target="_blank" rel="noreferrer">
+          <a class="card card--link" href="https://github.com/Mrcocacola21/ABSOLUTE_CINEMA" target="_blank" rel="noopener noreferrer">
             <div class="card__top">
               <h3 class="h3" data-i18n="proj5_title">Cinema Showcase</h3>
               <span class="tag" data-i18n="proj5_tag">Full Stack</span>
             </div>
             <p class="p" data-i18n="proj5_desc">Academic monorepo for a one-hall cinema schedule and ticketing system with FastAPI, React, MongoDB, and Docker.</p>
             <div class="card__btm">
-              <span class="mono" data-i18n="proj5_repo">github.com/Mrcocacola21/...</span>
+              <span class="mono" data-i18n="proj5_repo">github.com/Mrcocacola21/…</span>
               <span class="arrow" aria-hidden="true">↗</span>
             </div>
           </a>
@@ -265,18 +262,12 @@
             <h3 class="h3" data-i18n="proj_card_extra_title">Want more?</h3>
             <p class="p" data-i18n="proj_card_extra_desc">My GitHub has more experiments, labs, and side quests.</p>
             <div class="row">
-              <a class="btn btn--ghost" href="https://github.com/Mrcocacola21?tab=repositories" target="_blank" rel="noreferrer" data-i18n="btn_all_repos">
+              <a class="btn btn--ghost" href="https://github.com/Mrcocacola21?tab=repositories" target="_blank" rel="noopener noreferrer" data-i18n="btn_all_repos">
                 All repos
               </a>
               <a class="btn" href="#contact" data-i18n="btn_collab">Collab?</a>
             </div>
           </div>
-        </div>
-
-        <div class="splitline"></div>
-
-        <div class="grid proj__footer">
-
         </div>
       </div>
     </section>
@@ -285,8 +276,7 @@
     <section class="section" id="lore" data-theme
       data-bg0="#06060a" data-bg1="#071214"
       data-accent="#4b7bff" data-accent2="#4bffb0"
-      data-chip="AZURE"
-      aria-label="About">
+      aria-labelledby="lore-title">
       <div class="container grid lore__grid">
         <div class="card card--big">
           <div class="chipline">
@@ -294,7 +284,7 @@
             <span class="chipline__dot"></span>
             <span class="chipline__txt" data-i18n="lore_sub">Short, no water. Just the vibe.</span>
           </div>
-          <h2 class="h2 split" data-i18n="lore_title">About me</h2>
+          <h2 class="h2 split" id="lore-title" data-i18n="lore_title">About me</h2>
           <p class="p" data-i18n="lore_p1">
             I'm Maksym Zienienkov — a student focusing on data + software engineering.
           </p>
@@ -313,9 +303,9 @@
           </div>
         </div>
 
-        <figure class="waifu waifu--side" aria-label="Anime art placeholder for lore section">
+        <figure class="waifu waifu--side" aria-hidden="true">
           <div class="waifu__frame">
-            <img class="lazy" data-src="./assets/waifu-lore.webp" alt="Anime girl placeholder artwork (replace with your own)" width="520" height="620" />
+            <img class="lazy" data-src="./assets/waifu-lore.webp" alt="" width="520" height="620" />
           </div>
           <figcaption class="waifu__cap" data-i18n="waifu_lore_cap">Another character slot. Replace anytime.</figcaption>
         </figure>
@@ -326,8 +316,7 @@
     <section class="section" id="contact" data-theme
       data-bg0="#06060a" data-bg1="#120a12"
       data-accent="#ff4b9a" data-accent2="#ffe84b"
-      data-chip="MAGENTA"
-      aria-label="Contact">
+      aria-labelledby="contact-title">
       <div class="container">
         <div class="section__head">
           <div class="chipline">
@@ -335,7 +324,7 @@
             <span class="chipline__dot"></span>
             <span class="chipline__txt" data-i18n="contact_sub">Fastest way: Telegram.</span>
           </div>
-          <h2 class="h2 split" data-i18n="contact_title">Contact</h2>
+          <h2 class="h2 split" id="contact-title" data-i18n="contact_title">Contact</h2>
         </div>
 
         <div class="grid contact__grid">
@@ -352,29 +341,25 @@
               <div class="crow">
                 <div class="crow__k">Telegram</div>
                 <div class="crow__v">
-                  <a href="https://t.me/MrCocaCola21" target="_blank" rel="noreferrer" class="link mono">t.me/MrCocaCola21</a>
+                  <a href="https://t.me/MrCocaCola21" target="_blank" rel="noopener noreferrer" class="link mono">t.me/MrCocaCola21</a>
                 </div>
               </div>
 
               <div class="crow">
                 <div class="crow__k">LinkedIn</div>
                 <div class="crow__v">
-                  <a href="https://www.linkedin.com/in/zienienkov-maksym-123b1039b/" target="_blank" rel="noreferrer" class="link mono">linkedin.com/in/zienienkov…</a>
+                  <a href="https://www.linkedin.com/in/zienienkov-maksym-123b1039b/" target="_blank" rel="noopener noreferrer" class="link mono">linkedin.com/in/zienienkov…</a>
                 </div>
               </div>
 
               <div class="crow">
                 <div class="crow__k">GitHub</div>
                 <div class="crow__v">
-                  <a href="https://github.com/Mrcocacola21" target="_blank" rel="noreferrer" class="link mono">github.com/Mrcocacola21</a>
+                  <a href="https://github.com/Mrcocacola21" target="_blank" rel="noopener noreferrer" class="link mono">github.com/Mrcocacola21</a>
                 </div>
               </div>
 
               <div class="splitline"></div>
-
-              <p class="p muted" data-i18n="contact_note">
-                Tip: replace placeholder waifu SVGs in <code>/assets</code> with your own WebP/PNG for maximum anime energy.
-              </p>
 
               <div class="row">
                 <a class="btn" href="mailto:maxzenenkov@gmail.com" data-i18n="btn_email">Send email</a>
@@ -383,7 +368,7 @@
             </div>
           </div>
 
-          <figure class="waifu waifu--side" aria-label="Anime art placeholder for contact section">
+          <figure class="waifu waifu--side" aria-hidden="true">
             <div class="waifu__frame">
               <img class="lazy" data-src="./assets/waifu-contact.webp" alt="" width="520" height="640" />
             </div>
@@ -406,7 +391,6 @@
   <!-- Libraries (CDN only) -->
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/ScrollTrigger.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@studio-freight/lenis@1.0.42/bundled/lenis.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/split-type@0.3.4/umd/index.min.js"></script>
 
   <script defer src="./main.js"></script>

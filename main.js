@@ -18,7 +18,7 @@
   const dm = navigator.deviceMemory || 8; // may be undefined in some browsers
   if (hc <= 4 || dm <= 4) highFX = false;
   // ===== FX mode toggle (High FX / Low FX) =====
-  // Low FX => NO animations (GSAP/ScrollTrigger/Lenis/petals). Keep gradient/theme.
+  // Low FX => no heavy motion effects. Keep gradient/theme.
   const FX_KEY = 'fx_mode'; // 'high' | 'low'
 
   const getSavedFX = () => {
@@ -29,14 +29,13 @@
   };
 
   const baselineHighFX = highFX; // capability based on device/network
-  let fxMode = (getSavedFX() === 'low' || getSavedFX() === 'high') ? getSavedFX() : 'high';
+  const savedFx = getSavedFX();
+  let fxMode = (savedFx === 'low' || savedFx === 'high') ? savedFx : 'high';
   if (reduceMotion) fxMode = 'low';
 
   let fxEnabled = (fxMode === 'high') && !reduceMotion;
 
   const applyFxClasses = () => {
-    root.classList.toggle('fx-off', !fxEnabled);
-    // keep "lowfx" class as a hint for CSS (optional)
     root.classList.toggle('lowfx', !fxEnabled || !baselineHighFX);
   };
 
@@ -50,12 +49,19 @@
 
   // ===== Tiny helpers =====
   const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+  const requestIdle = (fn, timeout = 250) => {
+    if (window.requestIdleCallback) return window.requestIdleCallback(fn);
+    return window.setTimeout(fn, timeout);
+  };
+  const getAbsTop = (el) => el.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop || 0);
 
   // ===== i18n =====
   const i18n = {
     en: {
       fx_on: "High FX",
       fx_off: "Low FX",
+      fx_switch_to_high: "Switch to High FX",
+      fx_switch_to_low: "Switch to Low FX",
       skip: "Skip to content",
       nav_top: "To top",
       nav_stack: "Stack",
@@ -77,15 +83,26 @@
       stack_sub: "What I build with (and what I'm learning next).",
       stack_title: "Tools & Tech",
       stack_icons_title: "Core icons",
-      stack_badges_toggle: "Show Shields-style badges",
       waifu_stack_cap: "",
       proj_chip: "Quest Log",
       proj_sub: "Selected repos — click to open.",
       proj_title: "Projects",
+      proj1_title: "OptimizationAPP with GUI",
+      proj1_tag: "Python",
       proj1_desc: "Optimization engine + UI: iterations, plots, and cyber vibes.",
+      proj1_repo: "github.com/Mrcocacola21/…",
+      proj2_title: "FATE",
+      proj2_tag: "TypeScript",
       proj2_desc: "TypeScript monorepo: deterministic rules engine + authoritative Fastify/WebSocket server + Vite + React client.",
-      proj3_desc: "Course project: classic PHP backend + relational database.",
+      proj2_repo: "github.com/Mrcocacola21/…",
+      proj3_title: "Web Cardfight Vanguard",
+      proj3_tag: "Monorepo",
+      proj3_desc: "Early-stage Cardfight!! Vanguard web client and companion platform with a Next.js app shell, shared packages, and Supabase-ready foundation.",
+      proj3_repo: "github.com/Mrcocacola21/Web_Cardfight_Vanguard",
+      proj4_title: "NYC Taxi DWH Pipeline",
+      proj4_tag: "Data Eng",
       proj4_desc: "Reproducible ELT/DWH pipeline for NYC Taxi data: Postgres + dbt + Great Expectations, quarantine layer, benchmarks + EXPLAIN.",
+      proj4_repo: "github.com/Mrcocacola21/…",
       proj5_title: "Cinema Showcase",
       proj5_tag: "Full Stack",
       proj5_repo: "github.com/Mrcocacola21/…",
@@ -94,7 +111,6 @@
       proj_card_extra_desc: "My GitHub has more experiments, labs, and side quests.",
       btn_all_repos: "All repos",
       btn_collab: "Collab?",
-      waifu_proj_cap: "Wide banner slot — perfect for a key visual.",
       lore_chip: "Lore",
       lore_sub: "Short, no water. Just the vibe.",
       lore_title: "About me",
@@ -111,7 +127,6 @@
       contact_title: "Contact",
       email_k: "Email",
       copy_btn: "Copy",
-      contact_note: "",
       btn_email: "Send email",
       btn_top: "Back to top",
       waifu_contact_cap: "",
@@ -122,6 +137,8 @@
     ua: {
       fx_on: "High FX",
       fx_off: "Low FX",
+      fx_switch_to_high: "Увімкнути High FX",
+      fx_switch_to_low: "Увімкнути Low FX",
       skip: "Перейти до контенту",
       nav_top: "Вгору",
       nav_stack: "Стек",
@@ -143,24 +160,34 @@
       stack_sub: "Чим я користуюсь (і що вчу далі).",
       stack_title: "Технології",
       stack_icons_title: "Основні іконки",
-      stack_badges_toggle: "Показати бейджі Shields",
       waifu_stack_cap: "",
       proj_chip: "Журнал квестів",
       proj_sub: "Вибрані репозиторії — натисни, щоб відкрити.",
       proj_title: "Проєкти",
-      proj1_desc: "Оптимізація + UI: ітерації, графіки та вайб.",
+      proj1_title: "OptimizationAPP with GUI",
+      proj1_tag: "Python",
+      proj1_desc: "Оптимізація + UI: ітерації, графіки та кібер вайб.",
+      proj1_repo: "github.com/Mrcocacola21/…",
+      proj2_title: "FATE",
+      proj2_tag: "TypeScript",
       proj2_desc: "TypeScript монорепо: детермінований rules engine + авторитетний Fastify/WebSocket сервер + Vite + React клієнт.",
-      proj3_desc: "Курсова: класичний PHP бекенд + реляційна БД.",
+      proj2_repo: "github.com/Mrcocacola21/…",
+      proj3_title: "Web Cardfight Vanguard",
+      proj3_tag: "Monorepo",
+      proj3_desc: "Монорепозиторій вебклієнта Cardfight!! Vanguard на Next.js із Supabase.",
+      proj3_repo: "github.com/Mrcocacola21/…",
+      proj4_title: "NYC Taxi DWH Pipeline",
+      proj4_tag: "Data Eng",
       proj4_desc: "Відтворюваний ELT/DWH пайплайн для NYC Taxi: Postgres + dbt + Great Expectations, карантинний шар, бенчмарки + EXPLAIN.",
+      proj4_repo: "github.com/Mrcocacola21/…",
       proj5_title: "Cinema Showcase",
       proj5_tag: "Full Stack",
       proj5_repo: "github.com/Mrcocacola21/…",
-      proj5_desc: "\u041d\u0430\u0432\u0447\u0430\u043b\u044c\u043d\u0438\u0439 \u043c\u043e\u043d\u043e\u0440\u0435\u043f\u043e\u0437\u0438\u0442\u043e\u0440\u0456\u0439 \u0434\u043b\u044f \u0440\u043e\u0437\u043a\u043b\u0430\u0434\u0443 \u0441\u0435\u0430\u043d\u0441\u0456\u0432 \u0442\u0430 \u043f\u0440\u043e\u0434\u0430\u0436\u0443 \u043a\u0432\u0438\u0442\u043a\u0456\u0432 \u0432 \u043e\u0434\u043d\u043e\u0437\u0430\u043b\u044c\u043d\u043e\u043c\u0443 \u043a\u0456\u043d\u043e\u0442\u0435\u0430\u0442\u0440\u0456 \u043d\u0430 FastAPI, React, MongoDB \u0442\u0430 Docker.",
+      proj5_desc: "Навчальний монорепозиторій для розкладу сеансів та продажу квитків в однозальному кінотеатрі на FastAPI, React, MongoDB та Docker.",
       proj_card_extra_title: "Хочеш більше?",
       proj_card_extra_desc: "На GitHub ще багато лабораторних, експериментів і сайд-квестів.",
       btn_all_repos: "Усі репо",
       btn_collab: "Співпраця?",
-      waifu_proj_cap: "Широкий банер — ідеально для key visual.",
       lore_chip: "Лор",
       lore_sub: "Коротко, без води. Тільки суть.",
       lore_title: "Про мене",
@@ -177,7 +204,6 @@
       contact_title: "Контакти",
       email_k: "Пошта",
       copy_btn: "Копіювати",
-      contact_note: "",
       btn_email: "Надіслати лист",
       btn_top: "На початок",
       waifu_contact_cap: "",
@@ -186,10 +212,12 @@
       toast_failed: "Не вдалось скопіювати"
     }
   };
+  const getDict = () => i18n[root.dataset.lang] || i18n.en;
 
   function applyLang(lang) {
     root.dataset.lang = lang;
-    const dict = i18n[lang] || i18n.en;
+    root.lang = lang === 'ua' ? 'uk' : 'en';
+    const dict = getDict();
     $$('[data-i18n]').forEach(el => {
       const key = el.dataset.i18n;
       const val = dict[key];
@@ -199,7 +227,6 @@
     });
     $('#langLabel').textContent = lang.toUpperCase();
 
-    // ✅ #muted = следующий язык (то есть “переключиться на…”)
     const nextLang = (lang === 'en') ? 'ua' : 'en';
     const mutedEl = $('#nextlang');
     if (mutedEl) mutedEl.textContent = nextLang.toUpperCase();
@@ -220,6 +247,7 @@
   $('#langBtn')?.addEventListener('click', () => {
     const next = root.dataset.lang === 'en' ? 'ua' : 'en';
     applyLang(next);
+    updateFxUI();
   }, { passive: true });
 
   /* ===================== FX BUTTON ===================== */
@@ -228,9 +256,10 @@
 
   const updateFxUI = () => {
     if (!fxLabel) return;
-    fxLabel.textContent = fxEnabled ? 'High FX' : 'Low FX';
+    const dict = getDict();
+    fxLabel.textContent = fxEnabled ? dict.fx_on : dict.fx_off;
     fxBtn?.setAttribute('aria-pressed', fxEnabled ? 'true' : 'false');
-    fxBtn?.setAttribute('aria-label', fxEnabled ? 'Switch to Low FX' : 'Switch to High FX');
+    fxBtn?.setAttribute('aria-label', fxEnabled ? dict.fx_switch_to_low : dict.fx_switch_to_high);
   };
 
   updateFxUI();
@@ -279,10 +308,9 @@
     imgs.forEach(img => io.observe(img));
 
     // Idle preload: helps when user scrolls very fast on first load
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 220));
-    idle(() => {
+    requestIdle(() => {
       imgs.slice(0, 6).forEach(img => img.dataset.src && load(img));
-    });
+    }, 220);
   }
   lazyLoadImages();
 
@@ -327,7 +355,7 @@
     const btn = e.currentTarget;
     const email = btn?.dataset?.copy;
     if (!email) return;
-    const dict = i18n[root.dataset.lang] || i18n.en;
+    const dict = getDict();
     try {
       await navigator.clipboard.writeText(email);
       toast(dict.toast_copied);
@@ -352,8 +380,6 @@
   function initThemeBlend() {
     const themed = $$('[data-theme]');
     if (!themed.length) return;
-
-    const getAbsTop = (el) => el.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop || 0);
 
     // Parse hex like #aabbcc
     const hexToRgb = (hex) => {
@@ -489,65 +515,26 @@
     window.addEventListener('resize', () => { recalc(); schedule(); }, { passive: true });
 
     // Recalc after layout settles (images/fonts)
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 260));
-    idle(() => { recalc(); schedule(); });
+    requestIdle(() => { recalc(); schedule(); }, 260);
 
     // Initial apply
     schedule();
   }
   initThemeBlend();
 
-  // ===== Smooth scroll (Lenis) + anchors (FX-aware, no leaks) =====
-  let lenis = null;
-  let lenisTicker = null;
-
-  const canLenis = () => fxEnabled && highFX && window.Lenis && !reduceMotion;
-
-  function initLenis() {
-    if (!canLenis() || lenis) return;
-
-    lenis = new Lenis({
-      lerp: 0.09,
-      wheelMultiplier: 0.95,
-      smoothWheel: true,
-      smoothTouch: false
-    });
-
-    // Drive Lenis from a SINGLE loop
-    if (window.gsap && window.ScrollTrigger) {
-      gsap.registerPlugin(ScrollTrigger);
-
-      lenisTicker = (t) => lenis && lenis.raf(t * 1000);
-      gsap.ticker.add(lenisTicker);
-      gsap.ticker.lagSmoothing(0);
-
-      lenis.on('scroll', ScrollTrigger.update);
-    } else {
-      // fallback RAF loop if GSAP isn't present yet
-      const raf = (time) => {
-        if (!lenis) return;
-        lenis.raf(time);
-        requestAnimationFrame(raf);
-      };
-      requestAnimationFrame(raf);
+  const scrollToTarget = (target, { top = false, offset = -70 } = {}) => {
+    if (top) {
+      window.scrollTo({ top: 0, behavior: 'auto' });
+      return;
     }
-  }
 
-  function destroyLenis() {
-    if (!lenis) return;
+    if (!target) return;
 
-    try {
-      if (lenisTicker && window.gsap) gsap.ticker.remove(lenisTicker);
-    } catch {}
-    lenisTicker = null;
+    const topY = Math.max(0, getAbsTop(target) + offset);
+    window.scrollTo({ top: topY, behavior: 'auto' });
+  };
 
-    try { lenis.destroy(); } catch {}
-    lenis = null;
-  }
-
-  // Anchor handler (Top works in BOTH modes):
-  // - High FX: Lenis (if available), else smooth scroll
-  // - Low FX: instant scroll to top (doesn't rely on #top element)
+  // Anchor handler with instant scrolling and header offset.
   document.addEventListener('click', (e) => {
     const a = e.target.closest('a[href^="#"]');
     if (!a) return;
@@ -558,27 +545,22 @@
     // Always handle "to top" reliably
     if (id === '#top' || id === '#') {
       e.preventDefault();
-      const smooth = fxEnabled && !reduceMotion;
-      if (lenis && smooth && canLenis()) {
-        lenis.scrollTo(0, { duration: 0.9, easing: (t) => 1 - Math.pow(1 - t, 4) });
-      } else {
-        window.scrollTo({ top: 0, behavior: smooth ? 'smooth' : 'auto' });
-      }
+      scrollToTarget(null, { top: true });
       return;
     }
-
-    // LowFX (or reduced motion): let browser do the default anchor jump
-    if (!fxEnabled || reduceMotion) return;
 
     const target = document.querySelector(id);
     if (!target) return;
 
-    e.preventDefault();
-    if (lenis && canLenis()) {
-      lenis.scrollTo(target, { offset: -70, duration: 1.05, easing: (t) => 1 - Math.pow(1 - t, 4) });
-    } else {
-      target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (a.classList.contains('skip')) {
+      e.preventDefault();
+      target.focus({ preventScroll: true });
+      scrollToTarget(target, { offset: 0 });
+      return;
     }
+
+    e.preventDefault();
+    scrollToTarget(target);
   });
 
 
@@ -650,11 +632,9 @@
 
   function applyFxRuntime() {
     if (fxEnabled) {
-      initLenis();
       enableAnimations();
     } else {
       disableAnimations();
-      destroyLenis();
     }
   }
 
@@ -751,8 +731,6 @@
       .map(h => ({ href: h, el: document.querySelector(h) }))
       .filter(x => x.el);
 
-    const getAbsTop = (el) => el.getBoundingClientRect().top + (window.scrollY || document.documentElement.scrollTop || 0);
-
     let ordered = [];
     const recalc = () => {
       ordered = sections
@@ -762,7 +740,12 @@
     recalc();
 
     const setActive = (href) => {
-      links.forEach(l => l.classList.toggle('is-active', l.getAttribute('href') === href));
+      links.forEach((l) => {
+        const isActive = l.getAttribute('href') === href;
+        l.classList.toggle('is-active', isActive);
+        if (isActive) l.setAttribute('aria-current', 'location');
+        else l.removeAttribute('aria-current');
+      });
     };
 
     // Marker line (below fixed header). Using a probe point fixes "last section never reaches top" cases.
@@ -806,10 +789,7 @@
     window.addEventListener('scroll', schedule, { passive: true });
     window.addEventListener('resize', () => { recalc(); schedule(); }, { passive: true });
 
-    const idle = window.requestIdleCallback || ((fn) => setTimeout(fn, 300));
-    idle(() => { recalc(); schedule(); });
-
-    try { lenis?.on?.('scroll', schedule); } catch {}
+    requestIdle(() => { recalc(); schedule(); }, 300);
 
     schedule();
   }
@@ -946,31 +926,6 @@
   const yearEl = $('#year');
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  // ===== Minimal toast styling =====
-  const style = document.createElement('style');
-  style.textContent = `
-    .toast{
-      position: fixed;
-      left: 50%;
-      bottom: 18px;
-      transform: translateX(-50%) translateY(14px);
-      padding: 10px 12px;
-      border-radius: 999px;
-      border: 1px solid rgba(255,255,255,.14);
-      background: rgba(0,0,0,.55);
-      color: rgba(244,243,255,.92);
-      font-size: 13px;
-      backdrop-filter: blur(10px);
-      opacity: 0;
-      pointer-events: none;
-      transition: opacity 220ms ease, transform 220ms ease;
-      z-index: 9999;
-    }
-    .toast.is-on{ opacity: 1; transform: translateX(-50%) translateY(0px); }
-    @media (prefers-reduced-motion: reduce){ .toast{ transition:none; } }
-  `;
-  document.head.appendChild(style);
-
   // ===== Auto performance monitor -> LowFX mode =====
   // If we detect sustained low FPS, we drop the most expensive effects.
   let lowFX = false;
@@ -984,10 +939,6 @@
     lowFX = true;
     highFX = false;
     root.classList.add('lowfx');
-
-    // If Lenis exists, destroy it to remove scroll overhead
-    try { lenis?.destroy(); } catch {}
-    lenis = null;
 
     // Also stop heavy continuous GSAP timelines (button shine) but keep scroll triggers
     if (window.gsap) {
